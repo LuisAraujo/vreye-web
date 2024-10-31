@@ -4,7 +4,9 @@ recognition.continuous = true;
 recognition.lang = 'pt-BR';
 recognition.interimResults = false;
 recognition.maxAlternatives = 1;
-
+width = 400;
+height = 500;
+zoom = 2;
 
 recognition.onresult = function(event) { 
     console.log(event);
@@ -35,6 +37,7 @@ recognition.onresult = function(event) {
 
 recognition.onstart = function () {
     console.log('start');
+    takepicture();
 };
 
 recognition.onend = function () {
@@ -47,8 +50,8 @@ recognition.onerror = function (event) {
 
 
 let currentFacingMode = 'environment';
-  let zoom = 1;
-  const videoPreview = document.querySelector('#video-preview');
+ 
+  const video = document.querySelector('#video-preview');
   video_top = 0;
   video_left = 0;
   w_curr = 0;;
@@ -69,23 +72,25 @@ let currentFacingMode = 'environment';
         }
       }
     }).then((stream) => {
-      videoPreview.srcObject = stream;
-      w_initial =  videoPreview.offsetWidth;
-      h_initial =  videoPreview.offsetHeight;
+      video.srcObject = stream;
+      w_initial =  video.offsetWidth;
+      h_initial =  video.offsetHeight;
       w_curr = w_initial;
       h_curr = h_initial;
+      console.log('ok')
     })
   }
 
   const stopCamera = () => {
-    if (videoPreview.srcObject) {
-      const stream = videoPreview.srcObject;
+    if (video.srcObject) {
+      const stream = video.srcObject;
       const tracks = stream.getTracks().forEach((track) => track.stop());
     }
   }
 
   const btnCamera = document.querySelector('#btn-camera');
   const canvas = document.querySelector('#canvas');
+  const canvas2 = document.querySelector('#canvas2');
   const videoPreviewContainer = document.querySelector('#video-preview-container');
   const dialogCamera = document.querySelector('#dialog-camera');
   const btnZoomOut = document.querySelector('#btn-zoom-out');
@@ -113,8 +118,7 @@ let currentFacingMode = 'environment';
   });
 
   function zooming(){
-    videoPreview.style.transform = "scale("+zoom+")";
-    w_after = w_curr;
+   /* video = w_curr;
     h_after = h_curr;
     w_curr = w_initial * zoom;
     h_curr = h_initial * zoom;
@@ -123,11 +127,33 @@ let currentFacingMode = 'environment';
     console.log("left top", video_left, video_top);
     video_top = h_dif/12;
     video_left = w_dif/12;
-    videoPreview.style.top =  video_top + "px";
-    videoPreview.style.left =  video_left+ "px";
+    video.style.top =  video_top + "px";
+    video.style.left =  video_left+ "px";
     console.log("w h after", w_after, h_after);
     console.log("w h before", w_curr, h_curr);
     console.log("w h dif", w_dif, h_dif);
     console.log("left top", video_left, video_top);
-    console.log("---");
+    console.log("---");*/
+  }
+
+  function takepicture() {
+    var context = canvas.getContext('2d');
+    var context2 = canvas2.getContext('2d');
+    context.clearRect(0, 0, width, height);
+    context2.clearRect(0, 0, width, height);
+    context.save();
+    context.translate(window / 2, height / 2);
+    context.scale(zoom, zoom);
+    context.translate(-width/4, -width/4);
+    context.drawImage(video, 0, 0, width, height);
+    context.restore();
+
+    context2.save();
+    context2.translate(window / 2, height / 2);
+    context2.scale(zoom, zoom);
+    context2.translate(-width/4, -width/4);
+    context2.drawImage(video, 0, 0, width, height);
+    context2.restore();
+
+    setTimeout(takepicture, 2)
   }
